@@ -1,16 +1,3 @@
-//resolvers += Classpaths.typesafeResolver
-
-//resolvers ++= Seq(
-//  "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots",
-//  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases",
-//  "Scala-Tools Snapshots" at "http://scala-tools.org/repo-snapshots",
-//  "Scala Tools Releases" at "http://scala-tools.org/repo-releases",
-//  "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-//  "releases" at "http://oss.sonatype.org/content/repositories/releases",
-//  "spray repo" at "http://repo.spray.io",
-//  "spray nightlies repo" at "http://nightlies.spray.io"
-//)
-
 // SBT eclipse plugin for generating Eclipse project. Simply run 'eclipse' in SBT cmd.
 // FROM: https://github.com/typesafehub/sbteclipse
 // TASKS: eclipse
