@@ -1,11 +1,19 @@
 package com.example
 
+import com.example.db.api.DbCrudProviderImpl
+import com.example.test.utils.RandomDbConnectionIdentifier
 import org.specs2.mutable.Specification
 import spray.testkit.Specs2RouteTest
 import spray.http._
 import StatusCodes._
 
-class MyServiceSpec extends Specification with Specs2RouteTest with MyService {
+class MyServiceSpec
+  extends Specification
+  with Specs2RouteTest
+  with RandomDbConnectionIdentifier
+  with MyService
+  with DbCrudProviderImpl {
+
   def actorRefFactory = system
   
   "MyService" should {

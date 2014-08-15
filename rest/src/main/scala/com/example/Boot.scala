@@ -2,9 +2,13 @@ package com.example
 
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
+import com.example.db.connection.MongoConfig
 import spray.can.Http
 
 object Boot extends App {
+
+  implicit val mongoId = MongoConfig.registerConnection()
+  println("Mongo is connected?: " + MongoConfig.isConnected)
 
   // we need an ActorSystem to host our application in
   implicit val system = ActorSystem("on-spray-can")
