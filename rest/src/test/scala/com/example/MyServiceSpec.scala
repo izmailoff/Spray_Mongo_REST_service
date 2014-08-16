@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.backend.api.TweetApiImpl
 import com.example.db.api.DbCrudProviderImpl
 import com.example.test.utils.RandomDbConnectionIdentifier
 import org.specs2.mutable.Specification
@@ -12,7 +13,8 @@ class MyServiceSpec
   with Specs2RouteTest
   with RandomDbConnectionIdentifier
   with MyService
-  with DbCrudProviderImpl {
+  with DbCrudProviderImpl
+  with TweetApiImpl {
 
   def actorRefFactory = system
   
@@ -20,20 +22,14 @@ class MyServiceSpec
 
     "return a greeting for GET requests to the root path" in {
       Get() ~> myRoute ~> check {
-        responseAs[String] must contain("Say hello")
-      }
-    }
-
-    "leave GET requests to other paths unhandled" in {
-      Get("/kermit") ~> myRoute ~> check {
         handled must beFalse
       }
     }
 
-    "return a MethodNotAllowed error for PUT requests to the root path" in {
+    "return a Not Found error for PUT requests to the root path" in {
       Put() ~> sealRoute(myRoute) ~> check {
-        status === MethodNotAllowed
-        responseAs[String] === "HTTP method not allowed, supported methods: GET"
+        status === NotFound
+        responseAs[String] === "The requested resource could not be found."
       }
     }
   }

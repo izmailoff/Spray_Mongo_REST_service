@@ -1,8 +1,10 @@
 package com.example
 
 import akka.actor.Actor
+import com.example.backend.api.{TweetApiImpl, TweetApi}
 import com.example.db.api.{DbCrudProviderImpl, DbCrudProvider}
 import com.example.db.connection.{DefaultDbConnectionIdentifier, DbConnectionIdentifier}
+import com.example.marshalling.CustomMarshallers
 import spray.routing._
 import spray.http._
 import MediaTypes._
@@ -13,7 +15,8 @@ class MyServiceActor
   extends Actor
   with MyService
   with DefaultDbConnectionIdentifier
-  with DbCrudProviderImpl {
+  with DbCrudProviderImpl
+  with TweetApiImpl {
 
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
@@ -30,20 +33,25 @@ class MyServiceActor
 trait MyService
   extends HttpService
   with DbConnectionIdentifier
-  with DbCrudProvider {
+  with DbCrudProvider
+  with TweetApi
+  with CustomMarshallers {
 
   val myRoute =
-    path("") {
-      get {
-        respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
-          complete {
-            <html>
-              <body>
-                <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
-              </body>
-            </html>
-          }
+    pathPrefix("tweet") {
+      post {
+        complete {
+          // FIXME: temporary code for populating DB
+          val tweet = Tweets.createRecord
+            .createdBy(new org.bson.types.ObjectId)
+            .text(java.util.UUID.randomUUID.toString)
+            .when(new java.util.Date())
+          saveTweet(tweet)
+          "ok"
         }
-      }
+      } ~
+        get {
+          complete(getTweets(100))
+        }
     }
 }

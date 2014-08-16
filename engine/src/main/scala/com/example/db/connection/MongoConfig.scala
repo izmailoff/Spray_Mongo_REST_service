@@ -1,6 +1,6 @@
 package com.example.db.connection
 
-import com.mongodb.{MongoException, WriteConcern, ServerAddress, MongoClient}
+import com.mongodb.{WriteConcern, ServerAddress, MongoClient}
 import com.typesafe.config.ConfigFactory
 import net.liftweb.mongodb.{MongoIdentifier, MongoDB}
 import scala.util.{Success, Failure, Try}
@@ -51,6 +51,6 @@ object MongoConfig {
       MongoDB.getDb(mongoId).map(_.getCollectionNames()).isDefined
     } match {
       case Success(isConnected) => isConnected
-      case Failure(e: MongoException) => false
+      case Failure(e) => false // TODO: add err logging later
     }
 }
