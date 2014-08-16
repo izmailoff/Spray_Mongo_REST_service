@@ -13,11 +13,17 @@ abstract class Tweet
   with ObjectIdPk[Tweet]
   with IndexedRecord[Tweet] {
 
-  object text extends StringField(this, 140)
+  object text extends StringField(this, 140) {
+    override def validations =
+      valMinLen(2, "Required 2 chars min length.") _ ::
+        valMaxLen(140, "Required 140 chars max length.") _ ::
+        super.validations
+  }
 
   object when extends DateField(this)
 
   object createdBy extends ObjectIdField(this)
+
 }
 
 trait TweetMeta

@@ -4,7 +4,9 @@ import akka.actor.Actor
 import com.example.backend.api.{TweetApiImpl, TweetApi}
 import com.example.db.api.{DbCrudProviderImpl, DbCrudProvider}
 import com.example.db.connection.{DefaultDbConnectionIdentifier, DbConnectionIdentifier}
+import com.example.db.datamodel.Tweet
 import com.example.marshalling.CustomMarshallers
+import net.liftweb.common.Box
 import spray.routing._
 import spray.http._
 import MediaTypes._
@@ -40,14 +42,13 @@ trait MyService
   val myRoute =
     pathPrefix("tweet") {
       post {
-        complete {
-          // FIXME: temporary code for populating DB
-          val tweet = Tweets.createRecord
-            .createdBy(new org.bson.types.ObjectId)
-            .text(java.util.UUID.randomUUID.toString)
-            .when(new java.util.Date())
-          saveTweet(tweet)
-          "ok"
+        entity(as[Box[Tweet]]) { tweet =>
+          validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
+            complete {
+              saveTweet(tweet.get)
+              "Saved" // TODO: return the tweet back?
+            }
+          }
         }
       } ~
         get {
