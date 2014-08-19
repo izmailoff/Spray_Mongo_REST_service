@@ -19,7 +19,7 @@ object MyBuild extends Build {
   lazy val rest = Project(id = "rest",
     base = file("rest"))
     .settings(restSettings: _*)
-    .dependsOn(engine)
+    .dependsOn(engine % "test->test;compile->compile")
 
   lazy val engine = Project(id = "engine",
     base = file("engine"))
@@ -32,10 +32,11 @@ object MyBuild extends Build {
     settings ++
       Seq(libraryDependencies ++=
         Dependencies.lift ++
-          //Dependencies.spray ++
           //Dependencies.mongeezAll ++
           Dependencies.rogue ++
-          Dependencies.akka)
+          Dependencies.akka ++
+          Dependencies.log ++
+          Dependencies.testKit)
 
   lazy val restSettings =
     settings ++
@@ -50,9 +51,8 @@ object MyBuild extends Build {
       Seq(libraryDependencies ++=
         Dependencies.spray ++
           Dependencies.akka ++
-          Dependencies.testKit) // ++
-  //Dependencies.lift ++
-  //Dependencies.rogue)
+          Dependencies.log ++
+          Dependencies.testKit)
 
   override lazy val settings =
     super.settings ++
@@ -117,11 +117,11 @@ object MyBuild extends Build {
       val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaV
       val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaV % "test"
 
-      //val casbah = "org.mongodb" %% "casbah" % "2.7.1"
+      val casbah = "org.mongodb" %% "casbah" % "2.7.1" % "test"
       //val mongeez = "org.mongeez" % "mongeez" % "0.9.4"
 
       // LOG
-      //    val logback      = "ch.qos.logback" % "logback-classic"              % "1.0.13"
+      val logback      = "ch.qos.logback" % "logback-classic"              % "1.1.2"
       //    val logbackJavaCompiler = "org.codehaus.janino" % "janino" % "2.6.1"
 
       // DATE
@@ -129,7 +129,7 @@ object MyBuild extends Build {
 
       object Test {
         val specs2 = "org.specs2" %% "specs2" % "2.3.12" % "test"
-        val testDb = "com.github.fakemongo" % "fongo" % "1.5.1" % "test"
+        val testDb = "com.github.fakemongo" % "fongo" % "1.5.5" % "test"
       }
     }
 
@@ -137,12 +137,12 @@ object MyBuild extends Build {
 
     val rogue = Seq(rogueField, rogueCore, rogueLift, rogueIndex)
     val lift = Seq(liftCommon, liftRecord, liftJson)
-    //val log = Seq(Compile.logback, Compile.logbackJavaCompiler)
+    val log = Seq(Compile.logback)//, Compile.logbackJavaCompiler)
     val akka = Seq(akkaActor, akkaTestkit)
     val spray = Seq(sprayCan, sprayRouting, sprayTestkit)
     //val   mongeezAll = Seq(Compile.mongeez)
     //val testKit = Seq(Test.junit, Test.scalatest, Test.specs2, Test.testDb)
-    val testKit = Seq(Test.specs2, Test.testDb)
+    val testKit = Seq(Test.specs2, Test.testDb, casbah)
 
   }
 

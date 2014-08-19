@@ -9,5 +9,5 @@ import net.liftweb.util.StringHelpers
 trait RandomDbConnectionIdentifier
   extends DbConnectionIdentifier {
 
-  override val currentMongoId = MongoConfig.createMongoId(StringHelpers.randomString(10))
+  override implicit val currentMongoId = MongoConfig.createMongoId(StringHelpers.randomString(10))
 }
