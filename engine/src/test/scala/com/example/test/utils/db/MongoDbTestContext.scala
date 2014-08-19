@@ -1,14 +1,12 @@
-package com.example.testutils.db
+package com.example.test.utils.db
 
 import com.example.db.constants.CollectionNames
 import com.example.db.constants.CollectionNames.CollectionNames
-import com.example.db.constants.CollectionNames.CollectionNames
 import com.github.fakemongo.Fongo
 //import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.{DBCollection, DB, Mongo}
+import com.mongodb.{DB, DBCollection, Mongo}
 import net.liftweb.mongodb.{MongoDB, MongoIdentifier}
-import org.bson.types.ObjectId
-import org.specs2.execute.{Result, AsResult}
+import org.specs2.execute.{AsResult, Result}
 import org.specs2.mutable.Around
 
 /**
@@ -26,7 +24,7 @@ trait MongoDbTestContext {
   }
 
   /**
-   * Sets Mongo connection, drops all previous collections, creates empty collections. FIXME: not entirelly true
+   * Sets Mongo connection, drops all previous collections, creates empty collections.
    *
    * Prints "delimiter" between each DB reset so that it's easier to read logs.
    */

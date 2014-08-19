@@ -1,6 +1,6 @@
-package com.example.test.utils
+package com.example.test.utils.db
 
-import com.example.db.connection.{MongoConfig, DbConnectionIdentifier}
+import com.example.db.connection.{DbConnectionIdentifier, MongoConfig}
 import net.liftweb.util.StringHelpers
 
 /**

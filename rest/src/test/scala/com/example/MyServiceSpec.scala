@@ -2,7 +2,8 @@ package com.example
 
 import com.example.backend.api.TweetApiImpl
 import com.example.db.api.DbCrudProviderImpl
-import com.example.test.utils.RandomDbConnectionIdentifier
+import com.example.service.MyService
+import com.example.test.utils.db.RandomDbConnectionIdentifier
 import org.specs2.mutable.Specification
 import spray.testkit.Specs2RouteTest
 import spray.http._

@@ -1,15 +1,13 @@
-package com.example
+package com.example.service
 
 import akka.actor.Actor
-import com.example.backend.api.{TweetApiImpl, TweetApi}
-import com.example.db.api.{DbCrudProviderImpl, DbCrudProvider}
-import com.example.db.connection.{DefaultDbConnectionIdentifier, DbConnectionIdentifier}
+import com.example.backend.api.{TweetApi, TweetApiImpl}
+import com.example.db.api.{DbCrudProvider, DbCrudProviderImpl}
+import com.example.db.connection.{DbConnectionIdentifier, DefaultDbConnectionIdentifier}
 import com.example.db.datamodel.Tweet
 import com.example.marshalling.CustomMarshallers
 import net.liftweb.common.Box
-import spray.routing._
-import spray.http._
-import MediaTypes._
+import spray.routing.{Route, HttpService}
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -30,14 +28,18 @@ class MyServiceActor
   def receive = runRoute(myRoute)
 }
 
-
-// this trait defines our service behavior independently from the service actor
-trait MyService
+trait ServiceType
   extends HttpService
   with DbConnectionIdentifier
   with DbCrudProvider
   with TweetApi
   with CustomMarshallers {
+  def myRoute: Route
+}
+
+// this trait defines our service behavior independently from the service actor
+trait MyService
+  extends ServiceType {
 
   val myRoute =
     pathPrefix("tweet") {
