@@ -21,10 +21,10 @@ trait TweetApiImpl
   extends TweetApi
   with DbCrudProviderImpl {
 
-  override def saveTweet(tweet: Tweet) =
+  def saveTweet(tweet: Tweet) =
     tweet.save
 
-  override def getTweets(lastN: Int, byUserId: Option[ObjectId] = None) =
+  def getTweets(lastN: Int, byUserId: Option[ObjectId] = None) =
     Tweets.whereOpt(byUserId)(_.createdBy eqs _)
       .orderDesc(_.when)
       .limit(lastN)

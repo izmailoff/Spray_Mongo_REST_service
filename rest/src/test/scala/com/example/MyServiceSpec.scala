@@ -1,6 +1,6 @@
 package com.example
 
-import com.example.backend.api.TweetApiImpl
+import com.example.backend.api.{UserApiImpl, TweetApiImpl}
 import com.example.db.api.DbCrudProviderImpl
 import com.example.service.MyService
 import com.example.test.utils.db.RandomDbConnectionIdentifier
@@ -15,7 +15,8 @@ class MyServiceSpec
   with RandomDbConnectionIdentifier
   with MyService
   with DbCrudProviderImpl
-  with TweetApiImpl {
+  with TweetApiImpl
+  with UserApiImpl {
 
   def actorRefFactory = system
   

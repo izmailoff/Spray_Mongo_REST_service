@@ -1,6 +1,6 @@
 package com.example.test.utils.db
 
-import com.example.backend.api.TweetApiImpl
+import com.example.backend.api.{UserApiImpl, TweetApiImpl}
 import com.example.db.api.DbCrudProviderImpl
 import com.example.marshalling.CustomMarshallers
 import com.example.service.{ServiceType, MyService}
@@ -20,6 +20,7 @@ trait RestServiceMongoDbTestContext
         with RandomDbConnectionIdentifier
         with DbCrudProviderImpl
         with TweetApiImpl
+        with UserApiImpl
         with CustomMarshallers {
         override def actorRefFactory = system
       }

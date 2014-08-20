@@ -1,10 +1,11 @@
 package com.example.marshalling
 
 import com.example.db.api.DbCrudProvider
-import com.example.db.datamodel.Tweet
+import com.example.db.datamodel.{User, Tweet}
 import net.liftweb.common.{Box, Failure, Full}
 import net.liftweb.json._
 import net.liftweb.mongodb.record.BsonRecord
+import net.liftweb.record.{MetaRecord, Record}
 import spray.http.ContentTypes.`application/json`
 import spray.httpx.marshalling.Marshaller
 import spray.httpx.unmarshalling._
@@ -37,15 +38,20 @@ trait CustomMarshallers extends DbCrudProvider {
 
   implicit val Json2TweetUnmarshaller =
     Unmarshaller.delegate[JValue, Box[Tweet]](ContentTypeRange.`*`) {
-      jsonToTweetUnpickler(_)
+      jsonToRecordUnpickler(_, Tweets)
     }
 
-  private def jsonToTweetUnpickler(json: JValue): Box[Tweet] = {
-    val tweet = Tweets.createRecord
-    tweet.setFieldsFromJValue(json) match {
+  implicit val Json2UserUnmarshaller =
+    Unmarshaller.delegate[JValue, Box[User]](ContentTypeRange.`*`) {
+      jsonToRecordUnpickler(_, Users)
+    }
+
+  private def jsonToRecordUnpickler[T <: Record[T]](json: JValue, metaRec: T with MetaRecord[T]): Box[T] = {
+    val record = metaRec.createRecord
+    record.setFieldsFromJValue(json) match {
       case Full(()) =>
-        tweet.validate match {
-          case Nil => Full(tweet)
+        record.validate match {
+          case Nil => Full(record)
           case errors => Failure(s"Validation failed with: $errors.") // TODO: might need nicer formatting
         }
       case _ => Failure("Bad request format.")
