@@ -7,6 +7,9 @@ import com.example.db.connection.{DbConnectionIdentifier, DefaultDbConnectionIde
 import com.example.db.datamodel.{User, Tweet}
 import com.example.marshalling.CustomMarshallers
 import net.liftweb.common.Box
+import net.liftweb.json.{Extraction, JValue}
+import spray.http.HttpHeaders.{Allow, `Access-Control-Allow-Methods`}
+import spray.http.HttpMethods._
 import spray.routing.{Route, HttpService}
 
 // we don't implement our route structure directly in the service actor because
@@ -39,36 +42,60 @@ trait ServiceType
   def myRoute: Route
 }
 
+case class Link(rel: String, href: String)
+
 // this trait defines our service behavior independently from the service actor
 trait MyService
   extends ServiceType {
 
+  val rootPathLinks: JValue = {
+    import net.liftweb.json.JsonDSL._
+    implicit val formats = net.liftweb.json.DefaultFormats
+    val links =
+      Link("self", "/") ::
+      Link("users", "/users") ::
+      Link("tweets", "/tweets") :: Nil
+    ("links" -> links.map(Extraction.decompose(_)))
+  }
+
   val myRoute =
-    pathPrefix("users") {
-      post {
-        entity(as[Box[User]]) { user =>
-          validate(user.isDefined, "Bad data format - TODO: need a better message here") {
-            complete {
-              saveUser(user.get)
-              "User saved"
-            }
-          }
-        }
-      }
-    } ~
-    pathPrefix("tweet") {
-      post {
-        entity(as[Box[Tweet]]) { tweet =>
-          validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
-            complete {
-              saveTweet(tweet.get)
-              "Saved" // TODO: return the tweet back?
-            }
+    path("") {
+      options {
+        respondWithHeader(Allow(OPTIONS, GET)) {
+          complete {
+            rootPathLinks
           }
         }
       } ~
         get {
-          complete(getTweets(100))
+          complete("static content goes here later")
         }
-    }
+    } ~
+      pathPrefix("users") {
+        post {
+          entity(as[Box[User]]) { user =>
+            validate(user.isDefined, "Bad data format - TODO: need a better message here") {
+              complete {
+                saveUser(user.get)
+                "User saved"
+              }
+            }
+          }
+        }
+      } ~
+      pathPrefix("tweets") {
+        post {
+          entity(as[Box[Tweet]]) { tweet =>
+            validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
+              complete {
+                saveTweet(tweet.get)
+                "Saved" // TODO: return the tweet back?
+              }
+            }
+          }
+        } ~
+          get {
+            complete(getTweets(100))
+          }
+      }
 }

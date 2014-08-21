@@ -24,7 +24,7 @@ class PostTweetSpec
           .text("Some text")
       Tweets.count must be equalTo (0)
 
-      Post("/tweet", newTweet).withHeaders(`Content-Type`(`application/json`)) ~> sealRoute(myRoute) ~> check {
+      Post("/tweets", newTweet).withHeaders(`Content-Type`(`application/json`)) ~> sealRoute(myRoute) ~> check {
         handled must beTrue
         responseAs[String] must be equalTo ("Saved")
         val updatedTweets = Tweets.findAll
