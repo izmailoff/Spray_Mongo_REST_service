@@ -14,7 +14,7 @@ trait TweetApi
   // TODO: add validation
   def saveTweet(tweet: Tweet): Unit // TODO: should this be returning back the Tweet?
 
-  def getTweets(lastN: Int, byUserId: Option[ObjectId] = None): Traversable[Tweet]
+  def getTweets(lastN: Int, byUserId: Option[ObjectId] = None): List[Tweet]
 }
 
 trait TweetApiImpl

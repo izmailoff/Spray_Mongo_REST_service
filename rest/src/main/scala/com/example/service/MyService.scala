@@ -8,6 +8,7 @@ import com.example.db.datamodel.{User, Tweet}
 import com.example.marshalling.CustomMarshallers
 import net.liftweb.common.Box
 import net.liftweb.json.{Extraction, JValue}
+import org.bson.types.ObjectId
 import spray.http.HttpHeaders.{Allow, `Access-Control-Allow-Methods`}
 import spray.http.HttpMethods._
 import spray.routing.{Route, HttpService}
@@ -81,6 +82,12 @@ trait MyService
               }
             }
           }
+        } ~
+        get {
+          path(ObjectIdSegment) { id => // use .? or similar
+            complete(getUsers(Some(id)))
+          } ~
+          complete(getUsers())
         }
       } ~
       pathPrefix("tweets") {
