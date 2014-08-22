@@ -1,6 +1,7 @@
 package com.example.service
 
 import akka.actor.Actor
+import com.example.auth.UserPassAuthentication
 import com.example.backend.api.{UserApiImpl, UserApi, TweetApi, TweetApiImpl}
 import com.example.db.api.{DbCrudProvider, DbCrudProviderImpl}
 import com.example.db.connection.{DbConnectionIdentifier, DefaultDbConnectionIdentifier}
@@ -11,7 +12,9 @@ import net.liftweb.json.{Extraction, JValue}
 import org.bson.types.ObjectId
 import spray.http.HttpHeaders.{Allow, `Access-Control-Allow-Methods`}
 import spray.http.HttpMethods._
+import spray.routing.authentication.BasicAuth
 import spray.routing.{Route, HttpService}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -39,7 +42,8 @@ trait ServiceType
   with DbCrudProvider
   with TweetApi
   with UserApi
-  with CustomMarshallers {
+  with CustomMarshallers
+  with UserPassAuthentication {
   def myRoute: Route
 }
 
@@ -92,11 +96,13 @@ trait MyService
       } ~
       pathPrefix("tweets") {
         post {
-          entity(as[Box[Tweet]]) { tweet =>
-            validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
-              complete {
-                saveTweet(tweet.get)
-                "Saved" // TODO: return the tweet back?
+          authenticate(BasicAuth(userPassAuthenticator _, realm = "secure site")) { user =>
+            entity(as[Box[Tweet]]) { tweet =>
+              validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
+                complete {
+                  saveTweet(tweet.get.createdBy(user.id.get))
+                  "Saved" // TODO: return the tweet back?
+                }
               }
             }
           }

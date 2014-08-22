@@ -20,9 +20,13 @@ abstract class Tweet
         super.validations
   }
 
-  object when extends DateField(this)
+  object when extends DateField(this) {
+    //TODO: set default value
+  }
 
-  object createdBy extends ObjectIdField(this)
+  object createdBy extends ObjectIdField(this) {
+    //TODO: override def -- make this required
+  }
 
 }
 
