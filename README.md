@@ -89,4 +89,7 @@ TODO
 
 ### Accessing the Service
 You can send requests to the web service with tools like `curl` on Unix systems,
-or you can open the site in a browser.
+or you can open URLs in a browser.
+
+Example shell scripts are provided to show sample requests you can do. They are located
+[here](https://github.com/izmailoff/Spray_Mongo_REST_service/tree/master/scripts/requests).
