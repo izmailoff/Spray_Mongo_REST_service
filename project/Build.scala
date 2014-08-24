@@ -44,6 +44,7 @@ object MyBuild extends Build {
       Seq(mergeStrategy in assembly <<= (mergeStrategy in assembly) {
         (old) => {
           case PathList("overview.html") => MergeStrategy.rename
+          case PathList("application.conf") => MergeStrategy.concat
           case x => old(x)
         }
       }) ++
