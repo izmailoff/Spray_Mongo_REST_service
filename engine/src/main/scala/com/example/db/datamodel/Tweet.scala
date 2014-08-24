@@ -1,8 +1,10 @@
 package com.example.db.datamodel
 
-import com.example.db.connection.{MongoConfig, DbConnectionIdentifier}
+import com.example.db.connection.{DefaultDbConnectionIdentifier, MongoConfig, DbConnectionIdentifier}
 import com.example.db.constants.CollectionNames
+import com.example.db.utils.ObjectIdFieldValidators
 import com.foursquare.index.IndexedRecord
+import net.liftweb.common._
 import net.liftweb.mongodb.record.field.{DateField, ObjectIdField, ObjectIdPk}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.record.field.StringField
@@ -20,12 +22,14 @@ abstract class Tweet
         super.validations
   }
 
-  object when extends DateField(this) {
-    //TODO: set default value
-  }
+  object when extends DateField(this)
 
-  object createdBy extends ObjectIdField(this) {
-    //TODO: override def -- make this required
+  object createdBy extends ObjectIdField(this) with ObjectIdFieldValidators {
+    override def defaultValue = null
+
+    override def validations =
+      valNonEmpty() _ ::
+      super.validations
   }
 
 }

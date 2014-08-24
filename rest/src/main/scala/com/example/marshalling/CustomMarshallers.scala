@@ -50,14 +50,18 @@ trait CustomMarshallers extends DbCrudProvider {
       jsonToRecordUnpickler(_, Users)
     }
 
+  /**
+   * Converts JSON to a DB object (Record) by setting all fields provided in JSON document.
+   * It's expected that users perform validation of the result before they use it.
+   * @param json
+   * @param metaRec
+   * @tparam T
+   * @return A full box with DB object is returned if all fields could be set.
+   */
   private def jsonToRecordUnpickler[T <: Record[T]](json: JValue, metaRec: T with MetaRecord[T]): Box[T] = {
     val record = metaRec.createRecord
     record.setFieldsFromJValue(json) match {
-      case Full(()) =>
-        record.validate match {
-          case Nil => Full(record)
-          case errors => Failure(s"Validation failed with: $errors.") // TODO: might need nicer formatting
-        }
+      case Full(()) => Full(record)
       case _ => Failure("Bad request format.")
     }
   }
