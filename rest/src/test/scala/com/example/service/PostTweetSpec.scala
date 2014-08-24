@@ -1,19 +1,35 @@
-package com.example
+package com.example.service
 
-import com.example.backend.api.TweetApiImpl
-import com.example.db.api.DbCrudProviderImpl
-import com.example.service.{ServiceType, MyService}
-import com.example.test.utils.db.{RestServiceMongoDbTestContext, MongoDbTestContext, RandomDbConnectionIdentifier}
-import org.bson.types.ObjectId
-import org.specs2.mutable.Specification
-import spray.http.{HttpHeaders, HttpChallenge, StatusCodes, BasicHttpCredentials}
-import spray.http.HttpHeaders.{`Content-Type`, Accept, `Remote-Address`}
-import spray.testkit.Specs2RouteTest
+import com.example.test.utils.db.RestServiceMongoDbTestContext
+import net.liftweb.json.JsonDSL._
 import net.liftweb.json._
+import org.bson.types.ObjectId
+import spray.http.HttpHeaders.`Content-Type`
 import spray.http.MediaTypes._
+import spray.http.{BasicHttpCredentials, HttpChallenge, HttpHeaders, StatusCodes}
 
 class PostTweetSpec
   extends RestServiceMongoDbTestContext {
+
+  val tweetText = "Some text"
+  val newTweet: JValue = ("text" -> tweetText)
+
+  def SuccessfulTweetPostResult(creatorId: ObjectId): JValue =
+    ("status" -> "SUCCESSFUL") ~
+      ("value" ->
+        ("text" -> tweetText) ~ ("createdBy" -> creatorId.toString))
+
+  /**
+   * Removes auto generated fields from JSON response. This makes it
+   * easier to compare JSON afterwards in tests.
+   */
+  def removeAutogenFields(json: JValue): JValue =
+    parse(compact(render(
+      json remove {
+        case JField("_id", _) | JField("when", _) => true
+        case _ => false
+      })))
+
 
   "Posting a tweet" should {
     "succeed if tweet is properly formed and user is authenticated" in serviceContext { (service: ServiceType) =>
@@ -26,30 +42,24 @@ class PostTweetSpec
           .username("test")
           .password("testpass")
           .save
-      val newTweet =
-        Tweets.createRecord
-          //.createdBy(new ObjectId()) -- this should not be allowed
-          .text("Some text")
       Tweets.count must be equalTo (0)
       val validCredentials = BasicHttpCredentials(user.username.get, user.password.get)
 
       Post("/tweets", newTweet).withHeaders(`Content-Type`(`application/json`)) ~>
         addCredentials(validCredentials) ~> sealRoute(myRoute) ~> check {
         handled must beTrue
-        responseAs[String] must be equalTo ("Saved")
+        val response = removeAutogenFields(responseAs[JValue])
+        SuccessfulTweetPostResult(user.id.get) diff response must be equalTo (Diff(JNothing, JNothing, JNothing))
         val updatedTweets = Tweets.findAll
         updatedTweets must have size (1)
         updatedTweets exists (t =>
-          t.text.get == newTweet.text.get && t.createdBy.get == user.id.get) must beTrue
+          t.text.get == tweetText && t.createdBy.get == user.id.get) must beTrue
       }
     }
 
     "fail if tweet is properly formed and user is NOT authenticated" in serviceContext { (service: ServiceType) =>
       import service._
 
-      val newTweet =
-        Tweets.createRecord
-          .text("Some text")
       Tweets.count must be equalTo (0)
       val invalidCredentials = BasicHttpCredentials("RandomName", "WrongPassword")
 
@@ -59,7 +69,6 @@ class PostTweetSpec
         status === StatusCodes.Unauthorized
         header[HttpHeaders.`WWW-Authenticate`].get.challenges.head === HttpChallenge("Basic", "secure site")
         responseAs[String] must be equalTo ("The supplied authentication is invalid")
-
         val updatedTweets = Tweets.findAll
         updatedTweets must have size (0)
       }
@@ -67,7 +76,8 @@ class PostTweetSpec
 
     // TODO: maybe put all tests in a Table:
     // TODO: add a test for disabled user account
-    // TODO: add test for: responseAs[String] === "The resource requires authentication, which was not supplied with the request"
+    // TODO: add a test for: responseAs[String] === "The resource requires authentication, which was not supplied with the request"
+    // TODO: add a test for a tweet that fails validation
   }
 
 }

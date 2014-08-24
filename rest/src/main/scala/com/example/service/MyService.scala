@@ -6,7 +6,7 @@ import com.example.backend.api.{UserApiImpl, UserApi, TweetApi, TweetApiImpl}
 import com.example.db.api.{DbCrudProvider, DbCrudProviderImpl}
 import com.example.db.connection.{DbConnectionIdentifier, DefaultDbConnectionIdentifier}
 import com.example.db.datamodel.{User, Tweet}
-import com.example.marshalling.CustomMarshallers
+import com.example.marshalling.{BoxMarshallers, CustomMarshallers}
 import net.liftweb.common.Box
 import net.liftweb.json.{Extraction, JValue}
 import org.bson.types.ObjectId
@@ -43,6 +43,7 @@ trait ServiceType
   with TweetApi
   with UserApi
   with CustomMarshallers
+  with BoxMarshallers
   with UserPassAuthentication {
   def myRoute: Route
 }
@@ -82,7 +83,6 @@ trait MyService
             validate(user.isDefined, "Bad data format - TODO: need a better message here") {
               complete {
                 saveUser(user.get)
-                "User saved"
               }
             }
           }
@@ -101,7 +101,6 @@ trait MyService
               validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
                 complete {
                   saveTweet(tweet.get.createdBy(user.id.get))
-                  "Saved" // TODO: return the tweet back?
                 }
               }
             }

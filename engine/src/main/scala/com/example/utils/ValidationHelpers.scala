@@ -3,6 +3,7 @@ package com.example.utils
 import net.liftweb.common._
 import net.liftweb.json._
 import net.liftweb.record.Record
+import net.liftweb.util.FieldError
 
 /**
  * Convenience methods and types related to validation.
@@ -31,6 +32,17 @@ object ValidationHelpers {
     rec validate match {
       case Nil => SUCCESS
       case errors => ParamFailure("Validation failed",
-        pretty(render(JArray(errors map { e => JString(e.msg.toString) }))))
+        JArray(errors map { e => JString(s"${getFieldName(e)}: ${e.msg.toString}") }))
     }
+
+  /**
+   * Extracts field name from a validation error. Unfortunately that error does not preserve
+   * a reference to the field or its name. This is a bit too hackish. Alternatively you can
+   * provide field name as part of error message in validation functions (valMinLen... for example).
+   */
+  private def getFieldName(fieldErr: FieldError): String = {
+    val fieldId = fieldErr.field.uniqueFieldId.openOr("UnknownField")
+    if(fieldId == "_id") fieldId
+    else fieldId.replace("_id", "")
+  }
 }

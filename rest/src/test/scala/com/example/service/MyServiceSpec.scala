@@ -1,12 +1,11 @@
-package com.example
+package com.example.service
 
-import com.example.service.ServiceType
 import com.example.test.utils.db.RestServiceMongoDbTestContext
+import net.liftweb.json.JsonDSL._
+import net.liftweb.json._
 import spray.http.HttpHeaders.Allow
 import spray.http.HttpMethods._
 import spray.http.StatusCodes._
-import net.liftweb.json.JsonDSL._
-import net.liftweb.json._
 
 class MyServiceSpec
   extends RestServiceMongoDbTestContext {

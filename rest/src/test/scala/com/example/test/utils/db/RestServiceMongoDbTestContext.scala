@@ -20,8 +20,7 @@ trait RestServiceMongoDbTestContext
         with RandomDbConnectionIdentifier
         with DbCrudProviderImpl
         with TweetApiImpl
-        with UserApiImpl
-        with CustomMarshallers {
+        with UserApiImpl {
         override def actorRefFactory = system
       }
 

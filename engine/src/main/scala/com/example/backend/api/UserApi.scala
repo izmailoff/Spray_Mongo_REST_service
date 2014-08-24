@@ -10,7 +10,7 @@ import net.liftweb.common._
 trait UserApi
   extends DbCrudProvider {
 
-  def saveUser(user: User): Unit
+  def saveUser(user: User): Box[User]
 
   def getUsers(userId: Option[ObjectId] = None): List[User]
 
@@ -25,8 +25,10 @@ trait UserApiImpl
   extends UserApi
   with DbCrudProviderImpl {
 
-  def saveUser(user: User): Unit =
-    user.save
+  def saveUser(user: User): Box[User] =
+    for {
+      _ <- validateRecord(user)
+    } yield user.save
 
   def getUsers(userId: Option[ObjectId] = None) =
     Users.whereOpt(userId)(_.id eqs _).fetch()
