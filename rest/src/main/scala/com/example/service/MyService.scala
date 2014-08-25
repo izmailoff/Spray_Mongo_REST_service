@@ -15,6 +15,7 @@ import spray.http.HttpMethods._
 import spray.routing.authentication.BasicAuth
 import spray.routing.{Route, HttpService}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -82,17 +83,23 @@ trait MyService
           entity(as[Box[User]]) { user =>
             validate(user.isDefined, "Bad data format - TODO: need a better message here") {
               complete {
-                saveUser(user.get)
+                Future {
+                  saveUser(user.get)
+                }
               }
             }
           }
         } ~
-        get {
-          path(ObjectIdSegment) { id => // use .? or similar
-            complete(getUsers(Some(id)))
-          } ~
-          complete(getUsers())
-        }
+          get {
+            path(ObjectIdSegment) { id => // use .? or similar
+              complete(Future {
+                getUsers(Some(id))
+              })
+            } ~
+              complete(Future {
+                getUsers()
+              })
+          }
       } ~
       pathPrefix("tweets") {
         post {
@@ -100,14 +107,20 @@ trait MyService
             entity(as[Box[Tweet]]) { tweet =>
               validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
                 complete {
-                  saveTweet(tweet.get.createdBy(user.id.get))
+                  Future {
+                    saveTweet(tweet.get.createdBy(user.id.get))
+                  }
                 }
               }
             }
           }
         } ~
           get {
-            complete(getTweets(100))
+            complete {
+              Future {
+                getTweets(100)
+              }
+            }
           }
       }
 }
