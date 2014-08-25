@@ -108,7 +108,7 @@ trait MyService
               validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
                 complete {
                   Future {
-                    saveTweet(tweet.get.createdBy(user.id.get))
+                    saveTweet(tweet.get, user)
                   }
                 }
               }

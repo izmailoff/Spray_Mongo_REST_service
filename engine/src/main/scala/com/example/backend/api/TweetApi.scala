@@ -1,7 +1,7 @@
 package com.example.backend.api
 
 import com.example.db.api.{DbCrudProviderImpl, DbCrudProvider}
-import com.example.db.datamodel.Tweet
+import com.example.db.datamodel.{User, Tweet}
 import com.mongodb.WriteConcern
 import net.liftweb.common._
 import org.bson.types.ObjectId
@@ -21,7 +21,7 @@ trait TweetApi
    * @return if tweet validation was successful a tweet is returned after being saved in DB.
    *         Failure is returned if validation failed or internal server error encountered.
    */
-  def saveTweet(tweet: Tweet): Box[Tweet]
+  def saveTweet(tweet: Tweet, creator: User): Box[Tweet]
 
   def getTweets(lastN: Int, byUserId: Option[ObjectId] = None): List[Tweet]
 }
@@ -30,12 +30,12 @@ trait TweetApiImpl
   extends TweetApi
   with DbCrudProviderImpl {
 
-  def saveTweet(tweet: Tweet): Box[Tweet] = {
+  def saveTweet(tweet: Tweet, creator: User): Box[Tweet] = {
+    val tweetWithCreator = tweet.createdBy(creator.id.get)
     for {
-      _ <- validateRecord(tweet)
-      creator <- Users.find(tweet.createdBy.get) ?~ "User account does not exist."
+      _ <- validateRecord(tweetWithCreator)
       _ <- userAllowedToTweet(creator)
-    } yield tweet.save
+    } yield tweetWithCreator.save
   }
 
   def getTweets(lastN: Int, byUserId: Option[ObjectId] = None) =
