@@ -12,6 +12,7 @@ import net.liftweb.json.{Extraction, JValue}
 import org.bson.types.ObjectId
 import spray.http.HttpHeaders.{Allow, `Access-Control-Allow-Methods`}
 import spray.http.HttpMethods._
+import spray.httpx.encoding.Gzip
 import spray.routing.authentication.BasicAuth
 import spray.routing.{Route, HttpService}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -96,9 +97,11 @@ trait MyService
                 getUsers(Some(id))
               })
             } ~
-              complete(Future {
-                getUsers()
-              })
+              compressResponse(Gzip) {
+                complete(Future {
+                  getUsers()
+                })
+              }
           }
       } ~
       pathPrefix("tweets") {
@@ -116,9 +119,11 @@ trait MyService
           }
         } ~
           get {
-            complete {
-              Future {
-                getTweets(100)
+            compressResponse(Gzip) {
+              complete {
+                Future {
+                  getTweets(100)
+                }
               }
             }
           }

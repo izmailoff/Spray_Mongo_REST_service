@@ -19,18 +19,6 @@ class PostTweetSpec
       ("value" ->
         ("text" -> tweetText) ~ ("createdBy" -> creatorId.toString))
 
-  /**
-   * Removes auto generated fields from JSON response. This makes it
-   * easier to compare JSON afterwards in tests.
-   */
-  def removeAutogenFields(json: JValue): JValue =
-    parse(compact(render(
-      json remove {
-        case JField("_id", _) | JField("when", _) => true
-        case _ => false
-      })))
-
-
   "Posting a tweet" should {
     "succeed if tweet is properly formed and user is authenticated" in serviceContext { (service: ServiceType) =>
       import service._
@@ -48,8 +36,8 @@ class PostTweetSpec
       Post("/tweets", newTweet).withHeaders(`Content-Type`(`application/json`)) ~>
         addCredentials(validCredentials) ~> sealRoute(myRoute) ~> check {
         handled must beTrue
-        val response = removeAutogenFields(responseAs[JValue])
-        SuccessfulTweetPostResult(user.id.get) diff response must be equalTo (Diff(JNothing, JNothing, JNothing))
+        val responseJson = removeAutogenFields(responseAs[JValue])
+        SuccessfulTweetPostResult(user.id.get) diff responseJson must be equalTo (Diff(JNothing, JNothing, JNothing))
         val updatedTweets = Tweets.findAll
         updatedTweets must have size (1)
         updatedTweets exists (t =>
