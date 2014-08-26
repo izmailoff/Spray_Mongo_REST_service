@@ -1,4 +1,4 @@
 #!/bin/bash
 
-curl localhost:8080/tweets -v
+curl localhost:8080/tweets -v | gunzip
 
