@@ -23,6 +23,10 @@ To learn more about these technologies see the list of [references]
 Big thanks for the [SBT script](https://github.com/paulp/sbt-extras) and
 [Run Mongo script](https://github.com/foursquare/rogue) to the linked repos.
 
+# Talk / Presentation
+I gave a talk about this architecture for Sinagore Scala Programmers meetup [Building RESTful applications with Spray and MongoDB](http://www.meetup.com/Singapore-Scala-Programmers/events/200860052/).
+Presentation slides are [here](https://docs.google.com/presentation/d/1Z-npY1Hno4gyCnB5PN7KoDDBKnuusor_GwHgIwdwodg/edit?usp=sharing).
+
 # Installation
 This section describes steps required to build, configure and run the application.
 
