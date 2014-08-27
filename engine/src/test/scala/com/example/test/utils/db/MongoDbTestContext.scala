@@ -1,7 +1,9 @@
 package com.example.test.utils.db
 
+import akka.event.LoggingAdapter
 import com.example.db.constants.CollectionNames
 import com.example.db.constants.CollectionNames.CollectionNames
+import com.example.utils.log.AkkaLoggingHelper
 import com.github.fakemongo.Fongo
 //import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.{DB, DBCollection, Mongo}
@@ -12,7 +14,8 @@ import org.specs2.mutable.Around
 /**
  * Defines a helper test trait that provides DB connection for tests.
  */
-trait MongoDbTestContext {
+trait MongoDbTestContext
+extends AkkaLoggingHelper {
 
   /**
    * Override this if you want to define real MongoDB database connection or faked in-memory Fongo database.
@@ -31,14 +34,14 @@ trait MongoDbTestContext {
   def databaseContext(implicit mongoId: MongoIdentifier) = new Around {
     override def around[T: AsResult](t: => T): Result = {
       val dbName = mongoId.jndiName
-      println("\n" + "*" * 20 + s" SPINNING UP MONGO DATABASE [$dbName] " + "*" * 20) // FIXME: use debug
+      log.debug("\n" + "*" * 20 + s" SPINNING UP MONGO DATABASE [$dbName] " + "*" * 20)
       MongoDB.defineDb(mongoId, mongo, dbName)
       val currentDb = MongoDB.getDb(mongoId).get
       createAllEmptyCollections(currentDb)
       dropAllCollections(currentDb)
       createAllEmptyCollections(currentDb)
       val result = AsResult(t)
-      println("*" * 20 + s"  SHUTTING DOWN MONGO DATABASE [$dbName]  " + "*" * 20 + "\n")
+      log.debug("*" * 20 + s"  SHUTTING DOWN MONGO DATABASE [$dbName]  " + "*" * 20 + "\n")
       currentDb.dropDatabase()
       result
     }

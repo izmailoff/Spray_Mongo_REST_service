@@ -2,6 +2,7 @@ package com.example.marshalling
 
 import java.text.SimpleDateFormat
 
+import com.example.utils.log.AkkaLoggingHelper
 import net.liftweb.common._
 import net.liftweb.record.Record
 import spray.http.{HttpEntity, ContentTypes}
@@ -13,7 +14,8 @@ import net.liftweb.json.JsonDSL._
  * Marshallers that will take care of converting result type of [[Box]] to proper end-client
  * message format.
  */
-trait BoxMarshallers {
+trait BoxMarshallers
+  extends AkkaLoggingHelper {
 
   implicit def liftJsonFormats = new DefaultFormats {
     override def dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -41,26 +43,41 @@ trait BoxMarshallers {
       (value, contentType, ctx) =>
         val responseDoc = value match {
           case Full(()) =>
-            successResponse
+            logConditionally(successResponse)
           case Full(value: Record[_]) =>
-            successResponse ~ responseValue(value.asJValue)
+            logConditionally(successResponse ~ responseValue(value.asJValue))
           case Full(value) =>
-            successResponse ~ responseValue(value)
+            logConditionally(successResponse ~ responseValue(value))
           case ParamFailure(message, exception, _, value: JValue) =>
-            // log exception: error(exception)
-            failedResponse ~ responseMessage(message) ~ responseValue(value)
+            logConditionally(failedResponse ~ responseMessage(message) ~ responseValue(value), exception)
           case ParamFailure(message, exception, _, value) =>
-            // log exception: error(exception)
-            failedResponse ~ responseMessage(message) ~ responseValue(value)
+            logConditionally(failedResponse ~ responseMessage(message) ~ responseValue(value), exception)
           case Failure(message, exception, _) =>
-            // log exception: error...
-            failedResponse ~ responseMessage(message)
+            logConditionally(failedResponse ~ responseMessage(message), exception)
           case Empty =>
-            // log some error - debug
-            failedResponse ~ responseMessage("Failure reason unknown, see the logs.")
+            logConditionally(failedResponse ~ responseMessage("Failure reason unknown, see the logs."))
         }
         ctx.marshalTo(HttpEntity(contentType, pretty(render(responseDoc))))
     }
+
+  /**
+   * If exception was encountered during processing we want to log it at the ERROR level - this should be
+   * quite uncommon and requires investigation. Otherwise we log everything at DEBUG level for
+   * potential troubleshooting.
+   * @param exception an optional exception that occured
+   * @param value value that is returned to the client and also logged for debugging purposes.
+   * @return returns back unmodified result/value
+   */
+  private def logConditionally(value: JValue, exception: Box[Throwable] = Empty): JValue = {
+    val msg = s"Returned to the client:\n ${pretty(render(value))}."
+    exception match {
+      case Full(e) =>
+        log.error(e, msg)
+      case _ =>
+        log.debug(msg)
+    }
+    value
+  }
 
   // These might be enums:
   val SUCCESSFUL = "SUCCESSFUL"

@@ -10,7 +10,7 @@ import spray.httpx.marshalling._
 
 class BoxMarshallersSpec extends Specification with BoxMarshallers {
 
-  implicit val system = ActorSystem()
+  implicit val globalSystem = ActorSystem()
 
   "The Box Marshaller" should {
     "properly marshall an empty box instance to JSON" in {

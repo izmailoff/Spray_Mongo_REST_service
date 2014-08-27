@@ -36,6 +36,8 @@ class MyServiceActor
   // other things here, like request stream processing
   // or timeout handling
   def receive = runRoute(myRoute)
+
+  val globalSystem = actorRefFactory.system
 }
 
 trait ServiceType

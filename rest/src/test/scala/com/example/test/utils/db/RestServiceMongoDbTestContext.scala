@@ -20,6 +20,8 @@ trait RestServiceMongoDbTestContext
   with MongoDbTestContext
   with Specs2RouteTest {
 
+  val globalSystem = system
+
   def serviceContext =
     new AroundOutside[ServiceType] {
       val service = new MyService
@@ -27,11 +29,12 @@ trait RestServiceMongoDbTestContext
         with DbCrudProviderImpl
         with TweetApiImpl
         with UserApiImpl {
-        override def actorRefFactory = system
+        def actorRefFactory = system
+        val globalSystem = system
       }
 
       def around[T: AsResult](t: => T): Result =
-        databaseContext(service.currentMongoId).around(t)
+        databaseContext(service.currentMongoId).around(t) //TODO: cleanup - inherit from MongoDbTestContext directly?
 
       def outside: ServiceType = service
     }

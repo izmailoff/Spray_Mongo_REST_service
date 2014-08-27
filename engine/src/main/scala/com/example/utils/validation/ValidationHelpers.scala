@@ -1,4 +1,4 @@
-package com.example.utils
+package com.example.utils.validation
 
 import net.liftweb.common._
 import net.liftweb.json._

@@ -2,11 +2,12 @@ package com.example.backend.api
 
 import com.example.db.api.{DbCrudProviderImpl, DbCrudProvider}
 import com.example.db.datamodel.{User, Tweet}
+import com.example.utils.validation.ValidationHelpers
 import com.mongodb.WriteConcern
 import net.liftweb.common._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
-import com.example.utils.ValidationHelpers._
+import ValidationHelpers._
 
 /**
  * A backend API that implements all actions related to tweets.

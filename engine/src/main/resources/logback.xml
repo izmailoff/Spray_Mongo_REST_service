@@ -1,0 +1,74 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS}
+                [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLING"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>log/mytwitter.log
+        </file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -
+                %msg%n
+            </pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>log/mytwitter.%d{yyyy-MM-dd}.%i.gz
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 50MB -->
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    <!-- These are Lift run modes, you can use them with -Drun.mode=production JVM option or use smth else
+                    https://www.assembla.com/wiki/show/liftweb/Run_Modes -->
+                    System.getenv("run.mode") != null
+                    &amp;&amp;  <!-- Stands for && in XML -->
+                    (System.getenv("run.mode").equals("production")
+                    ||
+                    System.getenv("run.mode").equals("staging"))
+                </expression>
+            </evaluator>
+            <OnMismatch>DENY</OnMismatch>
+            <OnMatch>NEUTRAL</OnMatch>
+        </filter>
+
+        <smtpHost>localhost</smtpHost>
+        <smtpPort>25</smtpPort>
+        <from>admin@example.com</from>
+        <to>dev@example.com</to>
+        <subject>[${HOSTNAME}][MYTWITTER-LOG_ERROR]: %logger{20} - %m</subject>
+
+        <!--<cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTracker">
+            <bufferSize>20</bufferSize>
+        </cyclicBufferTracker>-->
+
+        <!-- <layout class="ch.qos.logback.classic.html.HTMLLayout"/> -->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date %-5level %logger{35} - %message%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="com.example" level="info"/>
+    <logger name="net.liftweb" level="info"/>
+    <root level="info">
+        <!--<appender-ref ref="ROLLING"/>
+        <appender-ref ref="EMAIL"/>-->
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

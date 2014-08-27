@@ -2,7 +2,8 @@ package com.example.backend.api
 
 import com.example.db.api.{DbCrudProviderImpl, DbCrudProvider}
 import com.example.db.datamodel.User
-import com.example.utils.ValidationHelpers._
+import com.example.utils.validation.ValidationHelpers
+import ValidationHelpers._
 import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import net.liftweb.common._

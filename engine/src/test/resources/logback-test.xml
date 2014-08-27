@@ -1,0 +1,16 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+	<logger name="com.example" level="info" />
+	<logger name="com.mongodb" level="warn" />
+    <logger name="com.github.fakemongo" level="warn" />
+    <logger name="com.mongodb.casbah.commons.conversions" level="warn" />
+	<logger name="net.liftweb" level="warn" />
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

@@ -3,19 +3,24 @@ package com.example.service
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
 import com.example.db.connection.MongoConfig
+import com.example.utils.log.AkkaLoggingHelper
 import com.typesafe.config.ConfigFactory
 import spray.can.Http
 
-object Boot extends App {
+object Boot
+  extends App
+  with AkkaLoggingHelper {
+
+  // we need an ActorSystem to host our application in
+  implicit val system = ActorSystem("on-spray-can")
+  override val globalSystem = system
+
   val conf = ConfigFactory.load.getConfig("application.network")
   val listenInterface = conf.getString("listenInterface")
   val listenPort = conf.getInt("listenPort")
 
   implicit val mongoId = MongoConfig.registerConnection()
-  println("Mongo is connected?: " + MongoConfig.isConnected)
-
-  // we need an ActorSystem to host our application in
-  implicit val system = ActorSystem("on-spray-can")
+  log.info("Is connected to Mongo? {}.", MongoConfig.isConnected)
 
   // create and start our service actor
   val service = system.actorOf(Props[MyServiceActor], "demo-service")

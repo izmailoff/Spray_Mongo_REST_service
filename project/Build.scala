@@ -122,8 +122,9 @@ object MyBuild extends Build {
       //val mongeez = "org.mongeez" % "mongeez" % "0.9.4"
 
       // LOG
-      val logback      = "ch.qos.logback" % "logback-classic"              % "1.1.2"
-      //    val logbackJavaCompiler = "org.codehaus.janino" % "janino" % "2.6.1"
+      val logback = "ch.qos.logback" % "logback-classic" % "1.1.2"
+      //use for advanced logback configuration like email on error based on some condition like run mode:
+      val logbackJavaCompiler = "org.codehaus.janino" % "janino" % "2.6.1"
 
       // DATE
       //    val dateScala = "org.scalaj" % "scalaj-time_2.10.0-M7" % "0.6"
@@ -138,7 +139,7 @@ object MyBuild extends Build {
 
     val rogue = Seq(rogueField, rogueCore, rogueLift, rogueIndex)
     val lift = Seq(liftCommon, liftRecord, liftJson)
-    val log = Seq(Compile.logback)//, Compile.logbackJavaCompiler)
+    val log = Seq(Compile.logback, Compile.logbackJavaCompiler)
     val akka = Seq(akkaActor, akkaTestkit)
     val spray = Seq(sprayCan, sprayRouting, sprayTestkit)
     //val   mongeezAll = Seq(Compile.mongeez)
