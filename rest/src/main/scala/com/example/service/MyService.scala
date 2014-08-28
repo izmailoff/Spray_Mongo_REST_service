@@ -121,10 +121,12 @@ trait MyService
           }
         } ~
           get {
-            compressResponse(Gzip) {
-              complete {
-                Future {
-                  getTweets(100)
+            parameters('pageSize.as[Int] ? 10, 'offset.as[Int] ? 0, 'userId.as[ObjectId] ?) { (pageSize, offset, uid) =>
+              compressResponse(Gzip) {
+                complete {
+                  Future {
+                    getTweets(pageSize, offset, uid)
+                  }
                 }
               }
             }

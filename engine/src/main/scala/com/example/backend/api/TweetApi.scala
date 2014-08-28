@@ -24,7 +24,7 @@ trait TweetApi
    */
   def saveTweet(tweet: Tweet, creator: User): Box[Tweet]
 
-  def getTweets(lastN: Int, byUserId: Option[ObjectId] = None): List[Tweet]
+  def getTweets(pageSize: Int, offset: Int, byUserId: Option[ObjectId] = None): List[Tweet]
 }
 
 trait TweetApiImpl
@@ -39,9 +39,10 @@ trait TweetApiImpl
     } yield tweetWithCreator.save
   }
 
-  def getTweets(lastN: Int, byUserId: Option[ObjectId] = None) =
+  def getTweets(pageSize: Int, offset: Int, byUserId: Option[ObjectId] = None) =
     Tweets.whereOpt(byUserId)(_.createdBy eqs _)
-      .orderDesc(_.when)
-      .limit(lastN)
+      //.orderDesc(_.when)
+      .skip(offset)
+      .limit(pageSize)
       .fetch()
 }
