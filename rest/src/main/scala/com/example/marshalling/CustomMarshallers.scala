@@ -4,7 +4,7 @@ import java.util.UUID
 
 import com.example.db.api.DbCrudProvider
 import com.example.db.datamodel.{User, Tweet}
-import net.liftweb.common.{Box, Failure, Full}
+import net.liftweb.common._
 import net.liftweb.json._
 import net.liftweb.mongodb.record.BsonRecord
 import net.liftweb.record.{MetaRecord, Record}
@@ -15,6 +15,7 @@ import spray.httpx.unmarshalling._
 import spray.http._
 import spray.http.ContentTypes._
 import spray.routing._
+import net.liftweb.util.ControlHelpers._
 
 trait CustomMarshallers
   extends DbCrudProvider {
@@ -34,21 +35,29 @@ trait CustomMarshallers
       JArray(records.map(_.asJValue).toList)
     }
 
-
   implicit val String2JsonUnmarshaller =
     Unmarshaller[JValue](MediaTypes.`application/json`) {
       case HttpEntity.NonEmpty(contentType, data) =>
         parse(new String(data.toByteArray.map(_.toChar)))
     }
 
-  implicit val Json2TweetUnmarshaller =
-    Unmarshaller.delegate[JValue, Box[Tweet]](ContentTypeRange.`*`) {
-      jsonToRecordUnpickler(_, Tweets)
-    }
+  implicit lazy val TweetUnmarshaller = requestToRecordUnmarshaller(Tweets)
 
-  implicit val Json2UserUnmarshaller =
-    Unmarshaller.delegate[JValue, Box[User]](ContentTypeRange.`*`) {
-      jsonToRecordUnpickler(_, Users)
+  implicit lazy val UserUnmarshaller = requestToRecordUnmarshaller(Users)
+
+  def requestToRecordUnmarshaller[T <: Record[T]](metaRec: T with MetaRecord[T]) =
+    new FromRequestUnmarshaller[T] {
+      def apply(req: HttpRequest): Deserialized[T] =
+        req.entity match {
+          case HttpEntity.NonEmpty(contentType, data) =>
+            val res = for {
+              jsonData <- tryo(parse(data.asString))
+              result <- jsonToRecordUnpickler(jsonData, metaRec)
+            } yield result
+            res toRight (MalformedContent(s"'${data.asString}' is not valid"))
+          case HttpEntity.Empty =>
+            Left(ContentExpected)
+        }
     }
 
   /**

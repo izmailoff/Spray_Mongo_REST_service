@@ -83,12 +83,10 @@ trait MyService
     } ~
       pathPrefix("users") {
         post {
-          entity(as[Box[User]]) { user =>
-            validate(user.isDefined, "Bad data format - TODO: need a better message here") {
-              complete {
-                Future {
-                  saveUser(user.get)
-                }
+          entity(as[User]) { user =>
+            complete {
+              Future {
+                saveUser(user)
               }
             }
           }
@@ -109,12 +107,10 @@ trait MyService
       pathPrefix("tweets") {
         post {
           authenticate(BasicAuth(userPassAuthenticator _, realm = "secure site")) { user =>
-            entity(as[Box[Tweet]]) { tweet =>
-              validate(tweet.isDefined, "Bad data format - TODO: need a better message here") {
-                complete {
-                  Future {
-                    saveTweet(tweet.get, user)
-                  }
+            entity(as[Tweet]) { tweet =>
+              complete {
+                Future {
+                  saveTweet(tweet, user)
                 }
               }
             }
