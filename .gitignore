@@ -6,6 +6,7 @@
 .idea/
 .classpath
 .project
+.cache
 .settings
 .worksheet
 .scala_dependencies

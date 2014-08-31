@@ -22,6 +22,7 @@ trait CustomMarshallers
 
   implicit val JsonMarshaller = jsonMarshaller(`application/json`)
 
+  // TODO: replace with lib trait and the reverse one too...
   def jsonMarshaller(contentType: ContentType, more: ContentType*): Marshaller[JValue] =
     Marshaller.of[JValue](contentType +: more: _*) { (value, contentType, ctx) =>
       ctx.marshalTo(HttpEntity(contentType, pretty(render(value))))
@@ -87,7 +88,7 @@ trait CustomMarshallers
   /**
    * A PathMatcher that matches and extracts an ObjectId instance.
    */
-  val ObjectIdSegment = PathMatcher( """^[0-9a-fA-F]{24}$""".r).flatMap { str =>
+  val ObjectIdSegment = PathMatcher( """^[0-9a-fA-F]{24}$""".r).flatMap { str => // TODO: no need for regex! - double check
     if (ObjectId.isValid(str)) Some(new ObjectId(str))
     else None
   }
