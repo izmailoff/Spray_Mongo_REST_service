@@ -8,23 +8,21 @@ import org.bson.types.ObjectId
 import com.foursquare.rogue.LiftRogue._
 import net.liftweb.common._
 
-trait UserApi
-  extends DbCrudProvider {
+trait UserApi {
+  this: DbCrudProvider =>
 
   def saveUser(user: User): Box[User]
 
   def getUsers(userId: Option[ObjectId] = None): List[User]
 
-  def userAllowedToTweet(user: User): ValidationResult =
-    if (user.isActive.get) SUCCESS
-    else Failure("Sorry, you are not allowed to tweet because your account was deactivated.")
-
   def authenticate(username: String, pass: String): Box[User]
+
+  def userAllowedToTweet(user: User): ValidationResult
 }
 
 trait UserApiImpl
-  extends UserApi
-  with DbCrudProviderImpl {
+  extends UserApi {
+  this: DbCrudProvider =>
 
   def saveUser(user: User): Box[User] =
     for {
@@ -43,4 +41,8 @@ trait UserApiImpl
         .headOption
     user ?~ "Authentication failed"
   }
+
+  def userAllowedToTweet(user: User): ValidationResult =
+    if (user.isActive.get) SUCCESS
+    else Failure("Sorry, you are not allowed to tweet because your account was deactivated.")
 }

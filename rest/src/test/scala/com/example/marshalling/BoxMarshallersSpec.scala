@@ -1,6 +1,7 @@
 package com.example.marshalling
 
 import akka.actor.ActorSystem
+import com.example.utils.log.AkkaLoggingHelper
 import net.liftweb.common._
 import org.specs2.mutable.Specification
 import net.liftweb.json._
@@ -8,7 +9,10 @@ import net.liftweb.json.JsonDSL._
 import spray.http._
 import spray.httpx.marshalling._
 
-class BoxMarshallersSpec extends Specification with BoxMarshallers {
+class BoxMarshallersSpec
+  extends Specification
+  with BoxMarshallers
+  with AkkaLoggingHelper {
 
   implicit val globalSystem = ActorSystem()
 

@@ -14,8 +14,8 @@ import net.liftweb.json.JsonDSL._
  * Marshallers that will take care of converting result type of [[Box]] to proper end-client
  * message format.
  */
-trait BoxMarshallers
-  extends AkkaLoggingHelper {
+trait BoxMarshallers {
+  this: AkkaLoggingHelper =>
 
   implicit def liftJsonFormats = new DefaultFormats {
     override def dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

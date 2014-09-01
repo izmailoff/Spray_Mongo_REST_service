@@ -18,45 +18,11 @@ import spray.routing.{Route, HttpService}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-// we don't implement our route structure directly in the service actor because
-// we want to be able to test it independently, without having to spin up an actor
-class MyServiceActor
-  extends Actor
-  with MyService
-  with DefaultDbConnectionIdentifier
-  with DbCrudProviderImpl
-  with TweetApiImpl
-  with UserApiImpl {
-
-  // the HttpService trait defines only one abstract member, which
-  // connects the services environment to the enclosing actor or test
-  def actorRefFactory = context
-
-  // this actor only runs our route, but you could add
-  // other things here, like request stream processing
-  // or timeout handling
-  def receive = runRoute(myRoute)
-
-  val globalSystem = actorRefFactory.system
-}
-
-trait ServiceType
-  extends HttpService
-  with DbConnectionIdentifier
-  with DbCrudProvider
-  with TweetApi
-  with UserApi
-  with CustomMarshallers
-  with BoxMarshallers
-  with UserPassAuthentication {
-  def myRoute: Route
-}
-
 case class Link(rel: String, href: String)
 
 // this trait defines our service behavior independently from the service actor
-trait MyService
-  extends ServiceType {
+trait RestServiceImpl
+  extends RestService {
 
   val rootPathLinks: JValue = {
     import net.liftweb.json.JsonDSL._
@@ -68,7 +34,7 @@ trait MyService
     ("links" -> links.map(Extraction.decompose(_)))
   }
 
-  val myRoute =
+  lazy val myRoute =
     path("") {
       options {
         respondWithHeader(Allow(OPTIONS, GET)) {

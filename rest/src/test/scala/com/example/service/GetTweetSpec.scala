@@ -14,7 +14,7 @@ class GetTweetSpec
   extends RestServiceMongoDbTestContext {
 
   "Getting all tweets" should {
-    "successfully return all of them compressed" in serviceContext { (service: ServiceType) =>
+    "successfully return all of them compressed" in serviceContext { (service: RestService) =>
       import service.{response => weDontNeedIt, _}
 
       val user =

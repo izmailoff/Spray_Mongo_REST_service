@@ -23,7 +23,7 @@ object Boot
   log.info("Is connected to Mongo? {}.", MongoConfig.isConnected)
 
   // create and start our service actor
-  val service = system.actorOf(Props[MyServiceActor], "demo-service")
+  val service = system.actorOf(Props[RestServiceHandler], "demo-service")
 
   // start a new HTTP server on port 8080 with our service actor as the handler
   IO(Http) ! Http.Bind(service, interface = listenInterface, port = listenPort)

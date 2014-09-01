@@ -3,7 +3,7 @@ package com.example.test.utils.db
 import com.example.backend.api.{UserApiImpl, TweetApiImpl}
 import com.example.db.api.DbCrudProviderImpl
 import com.example.marshalling.CustomMarshallers
-import com.example.service.{ServiceType, MyService}
+import com.example.service.{RestService, RestServiceImpl}
 import net.liftweb.json.JsonAST.JField
 import net.liftweb.json._
 import org.specs2.execute.{Result, AsResult}
@@ -23,12 +23,12 @@ trait RestServiceMongoDbTestContext
   val globalSystem = system
 
   def serviceContext =
-    new AroundOutside[ServiceType] {
-      val service = new MyService
+    new AroundOutside[RestService] {
+      val service = new RestServiceImpl
         with RandomDbConnectionIdentifier
         with DbCrudProviderImpl
-        with TweetApiImpl
-        with UserApiImpl {
+        with UserApiImpl
+        with TweetApiImpl {
         def actorRefFactory = system
         val globalSystem = system
       }
@@ -36,7 +36,7 @@ trait RestServiceMongoDbTestContext
       def around[T: AsResult](t: => T): Result =
         databaseContext(service.currentMongoId).around(t) //TODO: cleanup - inherit from MongoDbTestContext directly?
 
-      def outside: ServiceType = service
+      def outside: RestService = service
     }
 
   def haveContentEncoding(encoding: HttpEncoding) =

@@ -12,9 +12,8 @@ import ValidationHelpers._
 /**
  * A backend API that implements all actions related to tweets.
  */
-trait TweetApi
-  extends DbCrudProvider
-  with UserApi {
+trait TweetApi {
+  this: UserApi with DbCrudProvider =>
 
   /**
    * Validates and saves a tweet.
@@ -28,8 +27,8 @@ trait TweetApi
 }
 
 trait TweetApiImpl
-  extends TweetApi
-  with DbCrudProviderImpl {
+  extends TweetApi {
+  this: UserApi with DbCrudProvider =>
 
   def saveTweet(tweet: Tweet, creator: User): Box[Tweet] = {
     val tweetWithCreator = tweet.createdBy(creator.id.get)

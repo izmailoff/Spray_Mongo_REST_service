@@ -10,8 +10,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
  * Provides authentication for users.
  */
-trait UserPassAuthentication
-extends UserApi {
+trait UserPassAuthentication {
+ this: UserApi =>
 
   def userPassAuthenticator(userPass: Option[UserPass]): Future[Option[User]] =
     Future {

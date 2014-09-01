@@ -17,8 +17,8 @@ import spray.http.ContentTypes._
 import spray.routing._
 import net.liftweb.util.ControlHelpers._
 
-trait CustomMarshallers
-  extends DbCrudProvider {
+trait CustomMarshallers {
+  this: DbCrudProvider =>
 
   implicit val JsonMarshaller = jsonMarshaller(`application/json`)
 

@@ -15,7 +15,7 @@ import org.specs2.mutable.Around
  * Defines a helper test trait that provides DB connection for tests.
  */
 trait MongoDbTestContext
-extends AkkaLoggingHelper {
+  extends AkkaLoggingHelper {
 
   /**
    * Override this if you want to define real MongoDB database connection or faked in-memory Fongo database.

@@ -9,14 +9,17 @@ import net.liftweb.mongodb.record.MongoMetaRecord
  * Defines all available CRUD interfaces for collections. This has far more flexible configuration
  * than regular `object MetaRecord` which is especially useful for tests.
  */
-trait DbCrudProvider extends DbConnectionIdentifier {
+trait DbCrudProvider {
+  this: DbConnectionIdentifier =>
 
   val Tweets: Tweet with MongoMetaRecord[Tweet]
 
   val Users: User with MongoMetaRecord[User]
 }
 
-trait DbCrudProviderImpl extends DbCrudProvider {
+trait DbCrudProviderImpl
+  extends DbCrudProvider {
+  this: DbConnectionIdentifier =>
 
   override val Tweets = new TweetMeta {
     override implicit def mongoIdentifier = currentMongoId

@@ -20,7 +20,7 @@ class PostTweetSpec
         ("text" -> tweetText) ~ ("createdBy" -> creatorId.toString))
 
   "Posting a tweet" should {
-    "succeed if tweet is properly formed and user is authenticated" in serviceContext { (service: ServiceType) =>
+    "succeed if tweet is properly formed and user is authenticated" in serviceContext { (service: RestService) =>
       import service._
 
       val user =
@@ -45,7 +45,7 @@ class PostTweetSpec
       }
     }
 
-    "fail if tweet is properly formed and user is NOT authenticated" in serviceContext { (service: ServiceType) =>
+    "fail if tweet is properly formed and user is NOT authenticated" in serviceContext { (service: RestService) =>
       import service._
 
       Tweets.count must be equalTo (0)

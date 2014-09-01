@@ -18,14 +18,14 @@ class MyServiceSpec
   
   "MyService" should {
 
-    "return the main page for GET requests to the root path" in serviceContext { (service: ServiceType) =>
+    "return the main page for GET requests to the root path" in serviceContext { (service: RestService) =>
       import service._
       Get() ~> myRoute ~> check {
         handled must beFalse
       }
     }.pendingUntilFixed("This test will be updated shortly once the tested path has complete implementation.")
 
-    "return a Method Not Allowed error for PUT requests to the root path" in serviceContext { (service: ServiceType) =>
+    "return a Method Not Allowed error for PUT requests to the root path" in serviceContext { (service: RestService) =>
       import service._
       Put() ~> sealRoute(myRoute) ~> check {
         status === MethodNotAllowed
@@ -33,7 +33,7 @@ class MyServiceSpec
       }
     }
 
-    "return supported methods together with all API links starting from the root path" in serviceContext { (service: ServiceType) =>
+    "return supported methods together with all API links starting from the root path" in serviceContext { (service: RestService) =>
       import service._
       Options() ~> service.myRoute ~> check {
         // check headers and allowed methods

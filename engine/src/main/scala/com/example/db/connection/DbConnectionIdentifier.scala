@@ -16,7 +16,8 @@ trait DbConnectionIdentifier {
  * and dev purposes. Unit tests will provide random or test
  * DB name instead.
  */
-trait DefaultDbConnectionIdentifier extends DbConnectionIdentifier {
+trait DefaultDbConnectionIdentifier
+  extends DbConnectionIdentifier {
 
   override implicit val currentMongoId = MongoConfig.createMongoId()
 }
