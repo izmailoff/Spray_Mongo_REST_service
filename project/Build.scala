@@ -109,6 +109,7 @@ object MyBuild extends Build {
       val sprayCan = "io.spray" % "spray-can" % sprayV
       val sprayRouting = "io.spray" % "spray-routing" % sprayV
       val sprayTestkit = "io.spray" % "spray-testkit" % sprayV % "test"
+      val sprayMongoRecord = "com.github.izmailoff" %% "spray-mongo-record" % "0.0.1"
       //    "io.spray"  	  %   "spray-http"    % "1.2.0",
       //    "io.spray"            %   "spray-httpx"   % "1.2.0",
       //    "io.spray"            %%   "spray-json"    % "1.2.5"
@@ -141,7 +142,7 @@ object MyBuild extends Build {
     val lift = Seq(liftCommon, liftRecord, liftJson)
     val log = Seq(Compile.logback, Compile.logbackJavaCompiler)
     val akka = Seq(akkaActor, akkaTestkit)
-    val spray = Seq(sprayCan, sprayRouting, sprayTestkit)
+    val spray = Seq(sprayCan, sprayRouting, sprayTestkit, sprayMongoRecord)
     //val   mongeezAll = Seq(Compile.mongeez)
     //val testKit = Seq(Test.junit, Test.scalatest, Test.specs2, Test.testDb)
     val testKit = Seq(Test.specs2, Test.testDb, casbah)
