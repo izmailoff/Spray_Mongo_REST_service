@@ -1,6 +1,6 @@
 package com.example.service
 
-import com.example.test.utils.db.RestServiceMongoDbTestContext
+import com.example.test.utils.db.ServiceTestContext
 import net.liftweb.json.JsonDSL._
 import net.liftweb.json._
 import org.bson.types.ObjectId
@@ -9,10 +9,11 @@ import spray.http.MediaTypes._
 import spray.http.{BasicHttpCredentials, HttpChallenge, HttpHeaders, StatusCodes}
 
 class PostTweetSpec
-  extends RestServiceMongoDbTestContext {
+  extends ServiceTestContext {
 
   val tweetText = "Some text"
   val newTweet: JValue = ("text" -> tweetText)
+  val newTweetStr: String = pretty(render(newTweet))
 
   def SuccessfulTweetPostResult(creatorId: ObjectId): JValue =
     ("status" -> "SUCCESSFUL") ~
@@ -20,8 +21,8 @@ class PostTweetSpec
         ("text" -> tweetText) ~ ("createdBy" -> creatorId.toString))
 
   "Posting a tweet" should {
-    "succeed if tweet is properly formed and user is authenticated" in serviceContext { (service: RestService) =>
-      import service._
+    "succeed if tweet is properly formed and user is authenticated" in serviceContext { (service: RestServiceApi) =>
+      import service.{response => _, _}
 
       val user =
         Users.createRecord
@@ -34,10 +35,10 @@ class PostTweetSpec
       val validCredentials = BasicHttpCredentials(user.username.get, user.password.get)
 
       Post("/tweets", newTweet).withHeaders(`Content-Type`(`application/json`)) ~>
-        addCredentials(validCredentials) ~> sealRoute(myRoute) ~> check {
+        addCredentials(validCredentials) ~> sealRoute(route) ~> check {
         handled must beTrue
         val responseJson = removeAutogenFields(responseAs[JValue])
-        SuccessfulTweetPostResult(user.id.get) diff responseJson must be equalTo (Diff(JNothing, JNothing, JNothing))
+        SuccessfulTweetPostResult(user.id.get) must be equalTo(responseJson)
         val updatedTweets = Tweets.findAll
         updatedTweets must have size (1)
         updatedTweets exists (t =>
@@ -45,19 +46,19 @@ class PostTweetSpec
       }
     }
 
-    "fail if tweet is properly formed and user is NOT authenticated" in serviceContext { (service: RestService) =>
-      import service._
+    "fail if tweet is properly formed and user is NOT authenticated" in serviceContext { (service: RestServiceApi) =>
+      import service.{response => _, liftJsonUnmarshaller => _, _} // FIXME: liftJsonUnmarshaller messes with responseAs[String]
 
       Tweets.count must be equalTo (0)
       val invalidCredentials = BasicHttpCredentials("RandomName", "WrongPassword")
 
       Post("/tweets", newTweet).withHeaders(`Content-Type`(`application/json`)) ~>
-        addCredentials(invalidCredentials) ~> sealRoute(myRoute) ~> check {
+        addCredentials(invalidCredentials) ~> sealRoute(route) ~> check {
         handled must beTrue
         status === StatusCodes.Unauthorized
         header[HttpHeaders.`WWW-Authenticate`].get.challenges.head === HttpChallenge("Basic", "secure site")
-        responseAs[String] must be equalTo ("The supplied authentication is invalid")
-        val updatedTweets = Tweets.findAll
+        responseAs[String] must be equalTo("The supplied authentication is invalid")
+        val updatedTweets = service.Tweets.findAll
         updatedTweets must have size (0)
       }
     }

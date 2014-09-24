@@ -1,8 +1,8 @@
 package com.example.db.datamodel
 
-import com.example.db.connection.MongoConfig
 import com.example.db.constants.CollectionNames
 import com.foursquare.index.IndexedRecord
+import com.github.izmailoff.mongo.connection.MongoConfig
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
 import net.liftweb.mongodb.record.field.ObjectIdPk
 import net.liftweb.record.field.{BooleanField, EmailField, StringField}

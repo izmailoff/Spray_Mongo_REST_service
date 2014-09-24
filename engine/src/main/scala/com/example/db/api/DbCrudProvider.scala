@@ -1,9 +1,9 @@
 package com.example.db.api
 
-import com.example.db.connection.DbConnectionIdentifier
 import com.example.db.datamodel.{UserMeta, User, Tweet, TweetMeta}
 import net.liftweb.mongodb.MongoIdentifier
 import net.liftweb.mongodb.record.MongoMetaRecord
+import com.github.izmailoff.mongo.connection.DbConnectionIdentifier
 
 /**
  * Defines all available CRUD interfaces for collections. This has far more flexible configuration

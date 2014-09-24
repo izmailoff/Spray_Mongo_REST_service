@@ -1,20 +1,13 @@
 package com.example.service
 
-import akka.actor.Actor
-import com.example.auth.UserPassAuthentication
-import com.example.backend.api.{UserApiImpl, UserApi, TweetApi, TweetApiImpl}
-import com.example.db.api.{DbCrudProvider, DbCrudProviderImpl}
-import com.example.db.connection.{DbConnectionIdentifier, DefaultDbConnectionIdentifier}
-import com.example.db.datamodel.{User, Tweet}
-import com.example.marshalling.{BoxMarshallers, CustomMarshallers}
-import net.liftweb.common.Box
+import com.example.db.datamodel.{Tweet, User}
 import net.liftweb.json.{Extraction, JValue}
 import org.bson.types.ObjectId
-import spray.http.HttpHeaders.{Allow, `Access-Control-Allow-Methods`}
+import spray.http.HttpHeaders.Allow
 import spray.http.HttpMethods._
 import spray.httpx.encoding.Gzip
 import spray.routing.authentication.BasicAuth
-import spray.routing.{Route, HttpService}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -22,7 +15,7 @@ case class Link(rel: String, href: String)
 
 // this trait defines our service behavior independently from the service actor
 trait RestServiceImpl
-  extends RestService {
+  extends RestServiceApi {
 
   val rootPathLinks: JValue = {
     import net.liftweb.json.JsonDSL._
@@ -34,7 +27,7 @@ trait RestServiceImpl
     ("links" -> links.map(Extraction.decompose(_)))
   }
 
-  lazy val myRoute =
+  lazy val route =
     path("") {
       options {
         respondWithHeader(Allow(OPTIONS, GET)) {

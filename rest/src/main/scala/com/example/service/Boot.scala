@@ -2,8 +2,8 @@ package com.example.service
 
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
-import com.example.db.connection.MongoConfig
-import com.example.utils.log.AkkaLoggingHelper
+import com.github.izmailoff.logging.AkkaLoggingHelper
+import com.github.izmailoff.mongo.connection.MongoConfig
 import com.typesafe.config.ConfigFactory
 import spray.can.Http
 

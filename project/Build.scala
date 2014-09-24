@@ -92,6 +92,9 @@ object MyBuild extends Build {
 
     object Compile {
 
+      // MONGO
+      val mongoDriver = "org.mongodb" % "mongo-java-driver" % "2.12.3" // has to be in sync with Fongo and Record
+
       // LIFT
       val liftVersion = "2.5.1"
       val liftJson = "net.liftweb" %% "lift-json" % liftVersion
@@ -99,17 +102,21 @@ object MyBuild extends Build {
       val liftRecord = "net.liftweb" %% "lift-mongodb-record" % liftVersion
 
       // ROGUE
-      val rogueField = "com.foursquare" %% "rogue-field" % "2.2.1" intransitive()
-      val rogueCore = "com.foursquare" %% "rogue-core" % "2.3.0" intransitive()
-      val rogueLift = "com.foursquare" %% "rogue-lift" % "2.3.0" intransitive()
-      val rogueIndex = "com.foursquare" %% "rogue-index" % "2.3.0" intransitive()
+      val rogueField = "com.foursquare" %% "rogue-field" % "2.4.0" intransitive()
+      val rogueCore = "com.foursquare" %% "rogue-core" % "2.4.0" intransitive()
+      val rogueLift = "com.foursquare" %% "rogue-lift" % "2.4.0" intransitive()
+      val rogueIndex = "com.foursquare" %% "rogue-index" % "2.4.0" intransitive()
 
       // SPRAY
       val sprayV = "1.3.1"
       val sprayCan = "io.spray" % "spray-can" % sprayV
       val sprayRouting = "io.spray" % "spray-routing" % sprayV
       val sprayTestkit = "io.spray" % "spray-testkit" % sprayV % "test"
-      val sprayMongoRecord = "com.github.izmailoff" %% "spray-mongo-record" % "0.0.1"
+
+      // SPRAY-MONGO HELPERS
+      val sprayMongoMarshallers = "com.github.izmailoff" %% "marshallers" % "0.0.2"
+      val mongoConnect = "com.github.izmailoff" %% "mongoconnect" % "0.0.2"
+      val sprayMongoTestUtils = "com.github.izmailoff" %% "testutils" % "0.0.2" % "test"
       //    "io.spray"  	  %   "spray-http"    % "1.2.0",
       //    "io.spray"            %   "spray-httpx"   % "1.2.0",
       //    "io.spray"            %%   "spray-json"    % "1.2.5"
@@ -119,7 +126,7 @@ object MyBuild extends Build {
       val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaV
       val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaV % "test"
 
-      val casbah = "org.mongodb" %% "casbah" % "2.7.1" % "test"
+      //val casbah = "org.mongodb" %% "casbah" % "2.7.1" % "test"
       //val mongeez = "org.mongeez" % "mongeez" % "0.9.4"
 
       // LOG
@@ -132,20 +139,20 @@ object MyBuild extends Build {
 
       object Test {
         val specs2 = "org.specs2" %% "specs2" % "2.3.12" % "test"
-        val testDb = "com.github.fakemongo" % "fongo" % "1.5.5" % "test"
+        val testDb = "com.github.fakemongo" % "fongo" % "1.5.6" % "test" //???? check version
       }
     }
 
     import Compile._
 
-    val rogue = Seq(rogueField, rogueCore, rogueLift, rogueIndex)
-    val lift = Seq(liftCommon, liftRecord, liftJson)
+    val rogue = Seq(rogueField, rogueCore, rogueLift, rogueIndex, mongoConnect)
+    val lift = Seq(mongoDriver, liftCommon, liftRecord, liftJson)
     val log = Seq(Compile.logback, Compile.logbackJavaCompiler)
     val akka = Seq(akkaActor, akkaTestkit)
-    val spray = Seq(sprayCan, sprayRouting, sprayTestkit, sprayMongoRecord)
+    val spray = Seq(sprayCan, sprayRouting, sprayTestkit, sprayMongoMarshallers, sprayMongoTestUtils)
     //val   mongeezAll = Seq(Compile.mongeez)
     //val testKit = Seq(Test.junit, Test.scalatest, Test.specs2, Test.testDb)
-    val testKit = Seq(Test.specs2, Test.testDb, casbah)
+    val testKit = Seq(Test.specs2, Test.testDb)
 
   }
 

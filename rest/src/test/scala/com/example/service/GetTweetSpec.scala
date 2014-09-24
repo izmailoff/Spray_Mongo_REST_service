@@ -1,6 +1,6 @@
 package com.example.service
 
-import com.example.test.utils.db.RestServiceMongoDbTestContext
+import com.example.test.utils.db.ServiceTestContext
 import net.liftweb.json.JsonAST.JValue
 import spray.http.HttpHeaders.`Content-Type`
 import spray.http.MediaTypes._
@@ -11,10 +11,10 @@ import spray.routing.directives.EncodingDirectives._
 import net.liftweb.json._
 
 class GetTweetSpec
-  extends RestServiceMongoDbTestContext {
+  extends ServiceTestContext {
 
   "Getting all tweets" should {
-    "successfully return all of them compressed" in serviceContext { (service: RestService) =>
+    "successfully return all of them compressed" in serviceContext { (service: RestServiceApi) =>
       import service.{response => weDontNeedIt, _}
 
       val user =
@@ -33,7 +33,7 @@ class GetTweetSpec
       val dbTweets = tweets.map { t => removeAutogenFields(t.asJValue) }
 
       Get("/tweets") ~> decompressRequest() {
-        sealRoute(myRoute)
+        sealRoute(route)
       } ~> check {
         handled must beTrue
         response must haveContentEncoding(gzip)

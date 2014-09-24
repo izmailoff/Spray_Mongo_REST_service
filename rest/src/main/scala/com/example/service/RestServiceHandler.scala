@@ -3,7 +3,7 @@ package com.example.service
 import akka.actor.Actor
 import com.example.backend.api.{TweetApiImpl, UserApiImpl}
 import com.example.db.api.DbCrudProviderImpl
-import com.example.db.connection.DefaultDbConnectionIdentifier
+import com.github.izmailoff.mongo.connection.DefaultDbConnectionIdentifier
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -22,7 +22,7 @@ class RestServiceHandler
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
-  def receive = runRoute(myRoute)
+  def receive = runRoute(route)
 
   val globalSystem = actorRefFactory.system
 }

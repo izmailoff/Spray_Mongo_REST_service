@@ -1,9 +1,9 @@
 package com.example.db.datamodel
 
-import com.example.db.connection.{DefaultDbConnectionIdentifier, MongoConfig, DbConnectionIdentifier}
 import com.example.db.constants.CollectionNames
 import com.example.db.utils.ObjectIdFieldValidators
 import com.foursquare.index.IndexedRecord
+import com.github.izmailoff.mongo.connection.MongoConfig
 import net.liftweb.common._
 import net.liftweb.mongodb.record.field.{DateField, ObjectIdField, ObjectIdPk}
 import net.liftweb.mongodb.record.{MongoMetaRecord, MongoRecord}
