@@ -19,7 +19,7 @@ object MyBuild extends Build {
   lazy val rest = Project(id = "rest",
     base = file("rest"))
     .settings(restSettings: _*)
-    .dependsOn(engine % "test->test;compile->compile")
+    .dependsOn(engine)
 
   lazy val engine = Project(id = "engine",
     base = file("engine"))
@@ -114,9 +114,9 @@ object MyBuild extends Build {
       val sprayTestkit = "io.spray" % "spray-testkit" % sprayV % "test"
 
       // SPRAY-MONGO HELPERS
-      val sprayMongoMarshallers = "com.github.izmailoff" %% "marshallers" % "0.0.2"
-      val mongoConnect = "com.github.izmailoff" %% "mongoconnect" % "0.0.2"
-      val sprayMongoTestUtils = "com.github.izmailoff" %% "testutils" % "0.0.2" % "test"
+      val sprayMongoMarshallers = "com.github.izmailoff" %% "marshallers" % "0.0.2" intransitive()
+      val mongoConnect = "com.github.izmailoff" %% "mongoconnect" % "0.0.2" intransitive()
+      val sprayMongoTestUtils = "com.github.izmailoff" %% "testutils" % "0.0.2" % "test" intransitive()
       //    "io.spray"  	  %   "spray-http"    % "1.2.0",
       //    "io.spray"            %   "spray-httpx"   % "1.2.0",
       //    "io.spray"            %%   "spray-json"    % "1.2.5"

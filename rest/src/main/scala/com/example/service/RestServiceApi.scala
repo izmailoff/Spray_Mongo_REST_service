@@ -13,6 +13,5 @@ trait RestServiceApi
   with UserApi
   with TweetApi
   with CustomMarshallers
-  with UserPassAuthentication {
-  def route: Route
-}
+  with UserPassAuthentication
+
