@@ -1,4 +1,6 @@
 # Build Status
+
+[![Join the chat at https://gitter.im/izmailoff/Spray_Mongo_REST_service](https://badges.gitter.im/izmailoff/Spray_Mongo_REST_service.svg)](https://gitter.im/izmailoff/Spray_Mongo_REST_service?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/izmailoff/Spray_Mongo_REST_service.png?branch=master)]
 (https://travis-ci.org/izmailoff/Spray_Mongo_REST_service)
 
